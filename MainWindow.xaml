@@ -1,0 +1,184 @@
+﻿<Window x:Class="AuthWin.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AuthWin"
+        mc:Ignorable="d"
+        Title="AuthWin" Height="500" Width="500" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Icon="/AuthWin.ico">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <ListBox Grid.Row="0" Name="lbCodes" Visibility="Visible" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" SelectionChanged="lbCodes_SelectionChanged">
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="LightGray" BorderThickness="0,0,0,1" Margin="1">
+                        <Grid Margin="4,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+                                <Label Padding="0" Content="{Binding Name}" FontSize="16"></Label>
+                                <Label Padding="0" Content="{Binding Issuer}" FontSize="16" Margin="5,0,0,0"></Label>
+                            </StackPanel>
+                            
+                            <Label Grid.Row="1" Grid.Column="0" Content="{Binding Totp}" Padding="5" FontSize="24" FontWeight="Bold" Foreground="Blue" VerticalAlignment="Center"></Label>
+                            <Label Grid.Row="1" Grid.Column="1" Content="{Binding Seconds}" Padding="0" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center"></Label>
+                            <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="20,2,10,0">
+                                <Image Source="/images/qr.png" Width="16" Height="16" Cursor="Hand" MouseLeftButtonUp="QR_MouseLeftButtonUp" Tag="{Binding Id}" Opacity="0.4" MouseEnter="Image_MouseEnter" MouseLeave="Image_MouseLeave"></Image>
+                                <Image Source="/images/edit.png" Width="16" Height="16" Cursor="Hand" Tag="{Binding Id}" MouseLeftButtonUp="Edit_MouseLeftButtonUp" Opacity="0.4" MouseEnter="Image_MouseEnter" MouseLeave="Image_MouseLeave" Margin="10,0,0,0"></Image>
+                                <Image Source="/images/delete.png" Width="16" Height="16" Cursor="Hand" Tag="{Binding Id}" MouseLeftButtonUp="Delete_MouseLeftButtonUp" Opacity="0.4" MouseEnter="Image_MouseEnter" MouseLeave="Image_MouseLeave" Margin="10,0,0,0"></Image>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
+        <Grid Grid.Row="1" Margin="0,10,0,0" Name="pnlBottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*" />
+                <ColumnDefinition Width="25*" />
+                <ColumnDefinition Width="25*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Foreground="Gray" Padding="2" Name="lblCopy">Click on a code to copy</Label>
+            <Label Name="lblWeb" Grid.Row="0" Grid.Column="2" Foreground="Blue" Padding="2" HorizontalAlignment="Right" Cursor="Hand" MouseLeftButtonUp="lblWeb_MouseLeftButtonUp">AuthWin.com</Label>
+            <Button Grid.Column="0" Grid.Row="1" Name="btnAdd" Padding="4" Margin="0,10,0,0" Click="btnAdd_Click">_Add Account</Button>
+            <Button Grid.Column="1" Grid.Row="1" Name="btnImport" Padding="4" Margin="10,10,0,0" Click="btnImport_Click">_Import</Button>
+            <Button Grid.Column="2" Grid.Row="1" Name="btnExport" Padding="4" Margin="10,10,0,0" Click="btnExport_Click">_Export</Button>
+            <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,10,0,0" Name="pnlExport" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal" Name="pnlExportPass">
+                    <CheckBox Name="chkExportPass" Checked="chkExportPass_Checked" Unchecked="chkExportPass_Unchecked" VerticalAlignment="Center">Protect with password?</CheckBox>
+                    <TextBox FontSize="14" Name="txtExportPass" Width="150" Margin="10,0,0,0" Padding="2" VerticalAlignment="Center" Visibility="Hidden"></TextBox>
+                </StackPanel>
+                <Button Name="btnExportFinal" Padding="4" Margin="0,10,0,0" Click="btnExportFinal_Click">Export Accounts</Button>
+            </StackPanel>
+            <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Margin="0,10,0,0" Name="pnlImport" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Name="chkImportPass" Checked="chkImportPass_Checked" Unchecked="chkImportPass_Unchecked" VerticalAlignment="Center">File requires password?</CheckBox>
+                    <TextBox FontSize="14" Name="txtImportPass" Width="150" Margin="10,0,0,0" Padding="2" VerticalAlignment="Center" Visibility="Hidden"></TextBox>
+                </StackPanel>
+                <Button Name="btnImportFinal" Padding="4" Margin="0,10,0,0" Click="btnImportFinal_Click">Import Accounts</Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid Name="grdAdd" Grid.Row="0" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Margin="0,10" Name="grdAddButtons">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Padding="4" Name="btnScanQR" Click="btnScanQR_Click">Scan _QR Code</Button>
+                <Button Grid.Column="1"  Padding="4" Margin="10,0,0,0" Name="btnAddManual" Click="btnAddManual_Click">Add Secret _Manually</Button>
+            </Grid>
+            
+            <Grid Name="grdManual" Grid.Row="1" Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="0">
+                    <Label Padding="0">Name</Label>
+                    <TextBox x:Name="txtName" FontSize="16" Margin="0,2,0,0" Padding="2"></TextBox>
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="10,0,0,0">
+                    <Label Padding="0">Issuer</Label>
+                    <TextBox x:Name="txtIssuer" FontSize="16" Margin="0,2,0,0" Padding="2"></TextBox>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,10,0,0">
+                    <Label Padding="0">Secret</Label>
+                    <TextBox x:Name="txtSecret" FontSize="16" Margin="0,2,0,0" Padding="2"></TextBox>
+                </StackPanel>
+                <StackPanel Grid.Row="2" Margin="0,10" Grid.ColumnSpan="2">
+                    <Label Padding="0" Cursor="Hand" Name="lblAdvance" Focusable="True" MouseLeftButtonUp="lblAdvance_MouseLeftButtonUp">&#11208; A_dvance</Label>
+                    <Grid x:Name="grdAdvance" Margin="0,10,0,0" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                            <Label Padding="0">Duration (Seconds)</Label>
+                            <TextBox x:Name="txtDuration" FontSize="16" Margin="0,2,0,0" Padding="2" MaxLength="3">30</TextBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="5,0">
+                            <Label Padding="0">Hashing Algorithm</Label>
+                            <ComboBox Margin="0,2,0,0" FontSize="16" Name="cmbAlgo">
+                                <ComboBoxItem IsSelected="True">SHA1</ComboBoxItem>
+                                <ComboBoxItem>SHA256</ComboBoxItem>
+                                <ComboBoxItem>SHA512</ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Margin="5,0,0,0">
+                            <Label Padding="0">Length</Label>
+                            <TextBox FontSize="16" Margin="0,2,0,0" Padding="2" Name="txtLength" MaxLength="2">6</TextBox>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+                <Button x:Name="btnAddAccountManual" Grid.Column="0" Grid.Row="3" Padding="4" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Click="btnAddAccountManual_Click">Add</Button>
+                <Button x:Name="btnEditAccount" Grid.Column="0" Grid.Row="3" Padding="4" Grid.ColumnSpan="2" Width="150" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Click="btnEditAccount_Click" Visibility="Collapsed">Save</Button>
+            </Grid>
+            <Button Grid.Row="2" Padding="4" x:Name="btnBack" Click="btnBack_Click">_Back</Button>
+        </Grid>
+
+        <Grid Grid.Row="0" Name="grdQR" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Image Name="imgQR" Grid.Row="0"></Image>
+            <Grid Grid.Row="1" Margin="0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Padding="0" Grid.Column="0" VerticalAlignment="Center">URI:</Label>
+                <TextBox Margin="10,0" Grid.Column="1" Padding="2" VerticalAlignment="Center" Name="txtUri" IsReadOnly="True"></TextBox>
+                <Button Name="btnCopyUri" Padding="2" Width="60" Grid.Column="2" Margin="0,0,10,0" Click="btnCopyUri_Click">Copy</Button>
+            </Grid>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Name="btnCloseQR" HorizontalAlignment="Center" Padding="4" Width="100" Click="btnCloseQR_Click">Close</Button>
+                <Button Name="btnSaveQR" HorizontalAlignment="Center" Margin="20,0,0,0" Padding="4" Width="100" Click="btnSaveQR_Click">Save</Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
